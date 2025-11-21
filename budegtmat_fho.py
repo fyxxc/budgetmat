@@ -1,5 +1,7 @@
 import sqlite3
 import re
+import matplotlib
+matplotlib.use('Agg')  # Backend ohne GUI
 import matplotlib.pyplot as plt
 from datetime import datetime
 import os
@@ -135,15 +137,11 @@ while True:
             heute = datetime.now().strftime("%Y-%m-%d")
             dateiname = f"Budgetmat_fho_{heute}.pdf"
             
-            # Pfad zum Downloads-Ordner
-            downloads_ordner = os.path.expanduser("~/Downloads")
-            vollstaendiger_pfad = os.path.join(downloads_ordner, dateiname)
-            
-            # Als PDF speichern
-            plt.savefig(vollstaendiger_pfad)
+            # Als PDF im aktuellen Ordner speichern
+            plt.savefig(dateiname)
             plt.close()
             
-            print(f"✓ Grafik gespeichert: {vollstaendiger_pfad}\n")
+            print(f"✓ Grafik gespeichert: {dateiname}\n")
     
     
     # === OPTION 5: Beenden ===
