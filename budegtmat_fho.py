@@ -143,16 +143,16 @@ while True:
             plt.savefig(vollstaendiger_pfad)
             plt.close()
             
-            print(f"Grafik gespeichert: {dateiname}\n")
+            print(f"PDF wurde gespeichert: {dateiname}\n")
     
     
     # === OPTION 5: Beenden ===
     elif wahl == "5":
-        print("\nTschüss!")
+        print("\nTschöö mit ö")
         verbindung.close()
         break
     
     
     # === Ungültige Eingabe ===
     else:
-        print("\nUngültige Eingabe! Bitte 1, 2, 3, 4 oder 5 wählen.\n")
+        print("\nUngültige Eingabe: Bitte 1, 2, 3, 4 oder 5 wählen.\n")
