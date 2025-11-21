@@ -1,7 +1,7 @@
 import sqlite3
 import re
 import matplotlib
-matplotlib.use('Agg')  # Backend ohne GUI
+matplotlib.use('Agg')  # Backend für PDF erstellung aber ohne GUI und symbol im Dock
 import matplotlib.pyplot as plt
 from datetime import datetime
 import os
