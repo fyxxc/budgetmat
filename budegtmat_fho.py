@@ -10,7 +10,7 @@ import os
 print("Starte Budgetmat...")
 
 # Verbindung zur Datenbank herstellen (wird automatisch erstellt)
-verbindung = sqlite3.connect('ausgaben.db')
+verbindung = sqlite3.connect('budgetmat_fho_datenbank.db')
 cursor = verbindung.cursor()
 
 # Tabelle erstellen
