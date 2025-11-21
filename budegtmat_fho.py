@@ -137,11 +137,13 @@ while True:
             heute = datetime.now().strftime("%Y-%m-%d")
             dateiname = f"Budgetmat_fho_{heute}.pdf"
             
-            # Als PDF im aktuellen Ordner speichern
-            plt.savefig(dateiname)
+            # Als PDF im angegebenen Ordner speichern
+            ordner = "/Users/fynnhofmann/Documents/GitHub/BBZ-CFP/122-ICT/py/budgetmat"
+            vollstaendiger_pfad = os.path.join(ordner, dateiname)
+            plt.savefig(vollstaendiger_pfad)
             plt.close()
             
-            print(f"✓ Grafik gespeichert: {dateiname}\n")
+            print(f"Grafik gespeichert: {dateiname}\n")
     
     
     # === OPTION 5: Beenden ===
