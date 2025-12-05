@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import os
 
-# === SCHRITT 1: Datenbank erstellen ===
+# Schritt 1: Datenbank erstellen
 print("Starte Budgetmat...")
 
 # Verbindung zur Datenbank herstellen (wird automatisch erstellt)
@@ -26,7 +26,7 @@ verbindung.commit()
 print("Datenbank bereit!\n")
 
 
-# === SCHRITT 2: Hauptprogramm ===
+# Schritt 2: Hauptprogramm
 while True:
     print("--- AUSGABEN-TRACKER ---")
     print("1 = Ausgabe hinzufügen")
@@ -39,7 +39,7 @@ while True:
     wahl = input("\nWas möchtest du tun? ")
     
     
-    # === OPTION 1: Ausgabe hinzufügen ===
+    # Option 1: Ausgabe hinzufügen
     if wahl == "1":
         print("\n--- Neue Ausgabe ---")
         
@@ -66,7 +66,7 @@ while True:
             print("Ungültiger Betrag! Bitte nur Zahlen eingeben.\n")
     
     
-    # === OPTION 2: Alle Ausgaben anzeigen ===
+    # Option 2: Alle Ausgaben anzeigen
     elif wahl == "2":
         print("\n--- Alle Ausgaben ---")
         
@@ -89,7 +89,7 @@ while True:
             print()
     
     
-    # === OPTION 3: Summe berechnen ===
+    # Option 3: Summe berechnen
     elif wahl == "3":
         print("\n--- Gesamtsumme ---")
         
@@ -104,7 +104,7 @@ while True:
             print(f"Gesamtsumme: {summe} CHF\n")
     
     
-    # === OPTION 4: Grafik erstellen ===
+    # Option 4: Grafik erstellen
     elif wahl == "4":
         print("\n--- Grafik erstellen ---")
         
@@ -146,13 +146,13 @@ while True:
             print(f"PDF wurde gespeichert: {dateiname}\n")
     
     
-    # === OPTION 5: Beenden ===
+    # Option 5: Beenden
     elif wahl == "5":
         print("\nTschöö mit ö")
         verbindung.close()
         break
     
     
-    # === Ungültige Eingabe ===
+    # Ungültige Eingabe
     else:
         print("\nUngültige Eingabe: Bitte 1, 2, 3, 4 oder 5 wählen.\n")
