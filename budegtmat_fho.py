@@ -1,158 +1,71 @@
 import sqlite3
 import re
-import matplotlib
-matplotlib.use('Agg')  # Backend für PDF erstellung aber ohne GUI und symbol im Dock
-import matplotlib.pyplot as plt
-from datetime import datetime
-import os
 
-# Schritt 1: Datenbank erstellen
-print("Starte Budgetmat...")
+print("Programm wird gestartet...")
 
-# Verbindung zur Datenbank herstellen (wird automatisch erstellt)
-verbindung = sqlite3.connect('budgetmat_fho_datenbank.db')
+# --- KRITERIUM: SQLITE3 (DB erstellen) ---
+# Wir verbinden uns zur Datenbank (oder erstellen sie, falls sie nicht existiert)
+verbindung = sqlite3.connect('db_budgetmat_fho.db')
 cursor = verbindung.cursor()
 
-# Tabelle erstellen
+# Tabelle erstellen (nur wenn sie noch nicht da ist)
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS ausgaben (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        kategorie TEXT,
-        betrag REAL,
-        beschreibung TEXT
+        zweck TEXT,
+        betrag REAL
     )
 ''')
-verbindung.commit()
-print("Datenbank bereit!\n")
+verbindung.commit() # Speichern nicht vergessen!
 
 
-# Schritt 2: Hauptprogramm
+# --- KRITERIUM: KONTROLLSTRUKTUREN (while-Schleife) ---
 while True:
-    print("--- AUSGABEN-TRACKER ---")
-    print("1 = Ausgabe hinzufügen")
-    print("2 = Alle Ausgaben anzeigen")
-    print("3 = Summe berechnen")
-    print("4 = Grafik erstellen und als PDF speichern")
-    print("5 = Beenden")
+    print("\n--- MENÜ ---")
+    print("1: Neue Ausgabe eintragen")
+    print("2: Alle Ausgaben ansehen")
+    print("3: Beenden")
     
-    # Eingabe vom Benutzer
-    wahl = input("\nWas möchtest du tun? ")
+    # --- KRITERIUM: EIN- UND AUSGABEN (input) ---
+    auswahl = input("Deine Wahl: ")
     
-    
-    # Option 1: Ausgabe hinzufügen
-    if wahl == "1":
-        print("\n--- Neue Ausgabe ---")
+    # --- KRITERIUM: KONTROLLSTRUKTUREN (if/elif) ---
+    if auswahl == "1":
+        print("\n-- Eintrag --")
+        zweck = input("Wofür war das Geld? ")
+        zahl_string = input("Wie viel hat es gekostet(z.B. 15.50)? ")
         
-        # Kategorie eingeben
-        kategorie = input("Kategorie (z.B. Essen, Transport): ")
-        
-        # Betrag eingeben und mit Regex prüfen
-        betrag_eingabe = input("Betrag (z.B. 12.50): ")
-        
-        # Regex: Prüft ob nur Zahlen und optional ein Punkt mit Dezimalstellen
-        if re.match(r'^\d+(\.\d+)?$', betrag_eingabe):
-            betrag = float(betrag_eingabe)
+        # --- KRITERIUM: REGEX ---
+        # Wir prüfen: Startet mit Zahl(en), optional ein Punkt, optional mehr Zahlen
+        if re.match(r'^\d+(\.\d+)?$', zahl_string):
             
-            # Beschreibung eingeben
-            beschreibung = input("Beschreibung: ")
+            # Umwandeln in Kommazahl
+            betrag = float(zahl_string)
             
-            # In Datenbank speichern
-            cursor.execute('INSERT INTO ausgaben (kategorie, betrag, beschreibung) VALUES (?, ?, ?)', 
-                          (kategorie, betrag, beschreibung))
+            # --- KRITERIUM: SQLITE3 (Daten einfügen) ---
+            cursor.execute("INSERT INTO ausgaben (zweck, betrag) VALUES (?, ?)", (zweck, betrag))
             verbindung.commit()
+            print("Gespeichert!")
             
-            print(f"✓ Ausgabe von {betrag}CHF gespeichert!\n")
         else:
-            print("Ungültiger Betrag! Bitte nur Zahlen eingeben.\n")
-    
-    
-    # Option 2: Alle Ausgaben anzeigen
-    elif wahl == "2":
-        print("\n--- Alle Ausgaben ---")
-        
-        # Daten aus Datenbank auslesen
-        cursor.execute('SELECT * FROM ausgaben')
-        alle_ausgaben = cursor.fetchall()
-        
-        # Prüfen ob Ausgaben vorhanden sind
-        if len(alle_ausgaben) == 0:
-            print("Noch keine Ausgaben vorhanden.\n")
-        else:
-            # Alle Ausgaben durchgehen und anzeigen
-            for ausgabe in alle_ausgaben:
-                id_nummer = ausgabe[0]
-                kategorie = ausgabe[1]
-                betrag = ausgabe[2]
-                beschreibung = ausgabe[3]
-                
-                print(f"ID {id_nummer}: {kategorie} - {betrag}€ - {beschreibung}")
-            print()
-    
-    
-    # Option 3: Summe berechnen
-    elif wahl == "3":
-        print("\n--- Gesamtsumme ---")
-        
-        # Summe aus Datenbank berechnen
-        cursor.execute('SELECT SUM(betrag) FROM ausgaben')
-        summe = cursor.fetchone()[0]
-        
-        # Prüfen ob Summe existiert
-        if summe is None:
-            print("Noch keine Ausgaben vorhanden.\n")
-        else:
-            print(f"Gesamtsumme: {summe} CHF\n")
-    
-    
-    # Option 4: Grafik erstellen
-    elif wahl == "4":
-        print("\n--- Grafik erstellen ---")
-        
-        # Daten aus Datenbank auslesen
-        cursor.execute('SELECT kategorie, SUM(betrag) FROM ausgaben GROUP BY kategorie')
-        daten = cursor.fetchall()
-        
-        # Prüfen ob Ausgaben vorhanden sind
-        if len(daten) == 0:
-            print("Noch keine Ausgaben vorhanden.\n")
-        else:
-            # Kategorien und Beträge trennen
-            kategorien = []
-            betraege = []
+            print("FEHLER: Das war keine gültige Zahl (bitte Punkt statt Komma nutzen).")
             
-            for zeile in daten:
-                kategorien.append(zeile[0])
-                betraege.append(zeile[1])
+    elif auswahl == "2":
+        print("\n-- Liste --")
+        
+        # --- KRITERIUM: SQLITE3 (Daten auslesen) ---
+        cursor.execute("SELECT * FROM ausgaben")
+        alle_daten = cursor.fetchall()
+        
+        # --- KRITERIUM: KONTROLLSTRUKTUREN (for-Schleife) ---
+        for zeile in alle_daten:
+            # zeile ist ein Tupel, z.B. (1, 'Essen', 12.50)
+            print(f"ID: {zeile[0]} | Zweck: {zeile[1]} | Betrag: {zeile[2]} CHF")
             
-            # Grafik erstellen
-            plt.figure(figsize=(10, 6))
-            plt.bar(kategorien, betraege, color='skyblue')
-            plt.xlabel('Kategorie')
-            plt.ylabel('Betrag (CHF)')
-            plt.title('Ausgaben nach Kategorie')
-            plt.xticks(rotation=45, ha='right')
-            plt.tight_layout()
-            
-            # Dateiname mit aktuellem Datum erstellen
-            heute = datetime.now().strftime("%Y-%m-%d")
-            dateiname = f"Budgetmat_fho_{heute}.pdf"
-            
-            # Als PDF im angegebenen Ordner speichern
-            ordner = "/Users/fynnhofmann/Documents/GitHub/BBZ-CFP/122-ICT/py/budgetmat"
-            vollstaendiger_pfad = os.path.join(ordner, dateiname)
-            plt.savefig(vollstaendiger_pfad)
-            plt.close()
-            
-            print(f"PDF wurde gespeichert: {dateiname}\n")
-    
-    
-    # Option 5: Beenden
-    elif wahl == "5":
-        print("\nTschöö mit ö")
-        verbindung.close()
-        break
-    
-    
-    # Ungültige Eingabe
+    elif auswahl == "3":
+        print("Tschüss!")
+        verbindung.close() # Sauber schließen
+        break # Schleife beenden
+        
     else:
-        print("\nUngültige Eingabe: Bitte 1, 2, 3, 4 oder 5 wählen.\n")
+        print("Ungültige Eingabe.")
